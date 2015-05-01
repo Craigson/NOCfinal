@@ -37,8 +37,8 @@ Particle::Particle( Vec3f pos, Vec3f vel, bool followed )
 	mFollowed		= followed;
     
     
-    howManyTrails       = 10;
-    for(int i = 0; i < howManyTrails; i++){
+    tailLength       = 10;
+    for(int i = 0; i < tailLength; i++){
         locs.push_back(Vec3f::zero());
     }
 }
@@ -85,7 +85,7 @@ void Particle::update( )
 	mNumNeighbors = 0;
     
     //update my trail array
-    for(int arrayIndex = (howManyTrails -1); arrayIndex >= 0; arrayIndex--){
+    for(int arrayIndex = (tailLength -1); arrayIndex >= 0; arrayIndex--){
         if(arrayIndex != 0 ){
             locs[arrayIndex] = locs[arrayIndex - 1];
         } else if (arrayIndex == 0){
@@ -119,17 +119,11 @@ void Particle::draw()
 
 void Particle::drawTail()
 {
-//	glColor4f( mColor );
-//	gl::vertex( mPos );
-//	glColor4f( ColorA( mColor.r, mColor.g, mColor.b, 0.01f ) );
-//	gl::vertex( mTailPos );
     
         glBegin(GL_LINE_STRIP);
-   // glPointSize( 1.0 );
-   // glBegin(GL_POINTS);
     {
-        for(int i = 1; i < howManyTrails; i++){
-            float alpha = 0.7 - 0.03 * i;
+        for(int i = 1; i < tailLength; i++){
+            float alpha = 0.7 - 0.08 * i;
             gl::color(ColorAf(1., 1., 1., alpha ) );
             gl::vertex(locs[i]);
         }

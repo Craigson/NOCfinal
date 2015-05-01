@@ -16,6 +16,7 @@
 		446C95941AF2E41D00D28776 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446C95911AF2E41D00D28776 /* Particle.cpp */; };
 		446C95951AF2E41D00D28776 /* ParticleController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446C95921AF2E41D00D28776 /* ParticleController.cpp */; };
 		446C95961AF2E41D00D28776 /* Predator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446C95931AF2E41D00D28776 /* Predator.cpp */; };
+		446C959C1AF3060B00D28776 /* PredCam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446C959A1AF3060B00D28776 /* PredCam.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -38,6 +39,8 @@
 		446C95971AF2E42B00D28776 /* Particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Particle.h; path = ../include/Particle.h; sourceTree = "<group>"; };
 		446C95981AF2E42B00D28776 /* ParticleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleController.h; path = ../include/ParticleController.h; sourceTree = "<group>"; };
 		446C95991AF2E42B00D28776 /* Predator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Predator.h; path = ../include/Predator.h; sourceTree = "<group>"; };
+		446C959A1AF3060B00D28776 /* PredCam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PredCam.cpp; sourceTree = "<group>"; };
+		446C959B1AF3060B00D28776 /* PredCam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PredCam.h; sourceTree = "<group>"; };
 		4B29C193C0C64B6E89E89854 /* Flocking3D_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Flocking3D_Prefix.pch; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
@@ -80,6 +83,7 @@
 				446C95911AF2E41D00D28776 /* Particle.cpp */,
 				446C95921AF2E41D00D28776 /* ParticleController.cpp */,
 				446C95931AF2E41D00D28776 /* Predator.cpp */,
+				446C959A1AF3060B00D28776 /* PredCam.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -132,6 +136,7 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				446C959B1AF3060B00D28776 /* PredCam.h */,
 				446C95971AF2E42B00D28776 /* Particle.h */,
 				446C95981AF2E42B00D28776 /* ParticleController.h */,
 				446C95991AF2E42B00D28776 /* Predator.h */,
@@ -224,6 +229,7 @@
 			files = (
 				446C95951AF2E41D00D28776 /* ParticleController.cpp in Sources */,
 				E4FB1EE9C1EF41E7AAC46C5E /* Flocking3DApp.cpp in Sources */,
+				446C959C1AF3060B00D28776 /* PredCam.cpp in Sources */,
 				446C95961AF2E41D00D28776 /* Predator.cpp in Sources */,
 				446C95941AF2E41D00D28776 /* Particle.cpp in Sources */,
 			);

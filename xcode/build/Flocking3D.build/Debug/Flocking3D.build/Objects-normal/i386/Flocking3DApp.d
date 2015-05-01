@@ -135,4 +135,5 @@ dependencies: \
   ../../../cinder_0.8.6_mac/include/cinder/Rand.h \
   /Users/Craig/Documents/CinderProjects/Flocking3D/include/ParticleController.h \
   ../include/Particle.h ../include/Predator.h \
-  ../../../cinder_0.8.6_mac/include/cinder/Perlin.h
+  ../../../cinder_0.8.6_mac/include/cinder/Perlin.h \
+  /Users/Craig/Documents/CinderProjects/Flocking3D/xcode/PredCam.h

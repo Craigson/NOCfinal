@@ -41,8 +41,9 @@ Predator::Predator( Vec3f pos, Vec3f vel )
 	mIsHungry		= true;
     
     
-    howManyTrails       = 200;
-    for(int i = 0; i < howManyTrails; i++){
+    tailLength       = 50;
+    
+    for(int i = 0; i < tailLength; i++){
         tailPos.push_back(Vec3f::zero());
     }
 }
@@ -87,7 +88,7 @@ void Predator::update( )
     
     
     //update my trail array
-    for(int arrayIndex = (howManyTrails -1); arrayIndex >= 0; arrayIndex--){
+    for(int arrayIndex = (tailLength -1); arrayIndex >= 0; arrayIndex--){
         if(arrayIndex != 0 ){
             tailPos[arrayIndex] = tailPos[arrayIndex - 1];
         } else if (arrayIndex == 0){
@@ -126,7 +127,7 @@ void Predator::drawTail()
 //    glPointSize( 1.0 );
 //    glBegin(GL_POINTS);
     {
-        for(int i = 1; i < howManyTrails; i++){
+        for(int i = 1; i < tailLength; i++){
             float alpha = 1. - 0.03 * i;
             gl::color(ColorAf(1., 0., 0., alpha ) );
             gl::vertex(tailPos[i]);
@@ -139,5 +140,14 @@ void Predator::addNeighborPos( Vec3f pos )
 {
 	mNeighborPos += pos;
 	mNumNeighbors ++;
+}
+
+
+ci::Vec3f Predator::returnPos(){
+    return loc;
+}
+
+ci::Vec3f Predator::returnVel(){
+    return mVel;
 }
 

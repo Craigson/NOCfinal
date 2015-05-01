@@ -39,8 +39,8 @@ class Particle {
 	bool		mFollowed;
     
     
-    //array for trail
+    //variables for tail
     std::vector<Vec3f>       locs;
-    int                 howManyTrails;
+    int                 tailLength;
 
 };

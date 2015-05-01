@@ -23,4 +23,6 @@ class ParticleController {
 	std::list<Predator> mPredators;
 	ci::Vec3f mParticleCentroid;
 	int mNumParticles;
+    
+    
 };

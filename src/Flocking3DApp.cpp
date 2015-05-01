@@ -1,3 +1,9 @@
+//Final Project for Nature of Code at ITP, NYU
+//April 2015
+//Created by Craig Pickard
+//Based on Robert Hodgin's 'Welcome to Cinder' Tutorial
+//Special thanks to Mimi Yin and Dan Shiffman
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/Vector.h"
 #include "cinder/Utilities.h"
@@ -7,7 +13,9 @@
 #include "cinder/Rand.h"
 #include "ParticleController.h"
 #include "cinder/gl/gl.h"
+#include "PredCam.h"
 
+//definte constants
 #define NUM_INITIAL_PARTICLES 1500
 #define NUM_INITIAL_PREDATORS 9
 #define NUM_PARTICLES_TO_SPAWN 15
@@ -22,26 +30,42 @@ public:
     void setup();
     void update();
     void draw();
+    void followPred();
     
-    // parameters for GUI
+    // declare GUI object
     params::InterfaceGlRef	mParams;
     
-    // variables for the camera object
+    // declare camera variables (these will also be used for the predator-cam view)
     CameraPersp			mCam;
     Quatf				mSceneRotation;
     Vec3f				mEye, mCenter, mUp;
     float				mCameraDistance;
     
     ParticleController	mParticleController;
+    PredCam*            predCam;
     float				mZoneRadius;
     float				mLowerThresh, mHigherThresh;
     float				mAttractStrength, mRepelStrength, mOrientStrength;
     
     bool				mCentralGravity;
     bool				mPredatorCam;
-    bool				mSaveFrames;
-    bool				mIsRenderingPrint;
 };
+
+/*
+ predator cam:
+ >randomly select one of the predators
+ >assign camera position to predator position
+ >create a vector that points ahead of the predator
+ >set the lookat point at this vector
+ >update the position of the camera
+ */
+
+
+
+
+
+
+
 
 void FlockingApp::prepareSettings( Settings *settings )
 {
@@ -57,8 +81,6 @@ void FlockingApp::setup()
     mCenter			= Vec3f( getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f );
     mCentralGravity = true;
     mPredatorCam    = false;
-    mSaveFrames		= false;
-    mIsRenderingPrint = false;
     mZoneRadius		= 80.0f;
     mLowerThresh	= 0.5f;
     mHigherThresh	= 0.8f;
@@ -92,14 +114,15 @@ void FlockingApp::setup()
     //
     mParticleController.addParticles( NUM_INITIAL_PARTICLES );
     mParticleController.addPredators( NUM_INITIAL_PREDATORS );
+    
+    predCam = new PredCam(10.);
+    
 }
 
 void FlockingApp::keyDown( KeyEvent event )
 {
     if( event.getChar() == 'p' ){
         mParticleController.addParticles( NUM_PARTICLES_TO_SPAWN );
-    } else if( event.getChar() == 'u' ){
-        mSaveFrames = !mSaveFrames;
     }
 }
 
@@ -113,10 +136,23 @@ void FlockingApp::update()
     if( mCentralGravity ) mParticleController.pullToCenter( mCenter );
     mParticleController.update();
     
+    /*
+    if(something yo click){
     mEye	= Vec3f( 0.0f, 0.0f, mCameraDistance );
-    mCam.lookAt( mEye, mCenter, mUp );
-    gl::setMatrices( mCam );
+    } else {
+        mEye = yourPredatorClass->returnLoc();
+    }
+    */
+    
+
     gl::rotate( mSceneRotation );
+    
+    if (mPredatorCam){
+        predCam->update(mParticleController.mPredators.front().mVel,mParticleController.mPredators.front().loc);
+    } else {
+        mCam.lookAt( mEye, mCenter, mUp );
+        gl::setMatrices( mCam );
+    }
 }
 
 void FlockingApp::draw()
@@ -130,11 +166,7 @@ void FlockingApp::draw()
     gl::color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
     mParticleController.draw();
     
-    if( mSaveFrames ){
-        writeImage( getHomeDirectory() / "flocking" / ("image_" + toString( getElapsedFrames() ) + ".png"), copyWindowSurface() );
-    }
-    
-    // DRAW PARAMS WINDOW
+    // draw gui
     mParams->draw();
 }
 

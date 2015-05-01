@@ -14,6 +14,9 @@ class Predator {
 	void draw();
 	void drawTail();
 	void addNeighborPos( ci::Vec3f pos );
+    
+    ci::Vec3f returnPos();
+    ci::Vec3f returnVel();
 	
 	
 	int			mLen;
@@ -40,7 +43,9 @@ class Predator {
 	bool		mIsHungry;
 	bool		mIsDead;
     
-    //array for trail
+    //variables for tail
     std::vector<Vec3f>       tailPos;
-    int                 howManyTrails;
+    int                      tailLength;
+    
+    
 };
