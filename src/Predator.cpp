@@ -46,6 +46,7 @@ Predator::Predator( Vec3f pos, Vec3f vel )
     for(int i = 0; i < tailLength; i++){
         tailPos.push_back(Vec3f::zero());
     }
+   
 }
 
 void Predator::pullToCenter( const Vec3f &center )
@@ -63,10 +64,7 @@ void Predator::pullToCenter( const Vec3f &center )
 void Predator::update( )
 {	
 	mVel += mAcc;
-	
-	mVel += mAcc;
 	mVelNormal = mVel.safeNormalized();
-	
 	limitSpeed();
 	
 	
@@ -115,8 +113,8 @@ void Predator::limitSpeed()
 void Predator::draw()
 {
 	glColor4f( mColor );
-	//Vec3f vel = mVelNormal * mLength;
-	//gl::drawVector( mPos[0] - mVel, mPos[0], mLength * 0.85f, 3.0f + mHunger );
+    
+   // gl::enableAlphaBlending();
     drawTail();
 }
 

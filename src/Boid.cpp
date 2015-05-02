@@ -1,4 +1,4 @@
-#include "Particle.h"
+#include "Boid.h"
 #include "cinder/Rand.h"
 #include "cinder/gl/gl.h"
 #include "cinder/app/AppBasic.h"
@@ -6,11 +6,11 @@
 using namespace ci;
 using std::vector;
 
-Particle::Particle()
+Boid::Boid()
 {
 }
 
-Particle::Particle( Vec3f pos, Vec3f vel, bool followed )
+Boid::Boid( Vec3f pos, Vec3f vel, bool followed, float radius )
 {
 	mPos			= pos;
 	mTailPos		= pos;
@@ -36,14 +36,16 @@ Particle::Particle( Vec3f pos, Vec3f vel, bool followed )
 	mIsDead			= false;
 	mFollowed		= followed;
     
+    mRadius         = radius;
     
-    tailLength       = 10;
+    tailLength       =  40;
+    
     for(int i = 0; i < tailLength; i++){
         locs.push_back(Vec3f::zero());
     }
 }
 
-void Particle::pullToCenter( const Vec3f &center )
+void Boid::pullToCenter( const Vec3f &center )
 {
 	Vec3f dirToCenter = mPos - center;
 	float distToCenter = dirToCenter.length();
@@ -57,7 +59,7 @@ void Particle::pullToCenter( const Vec3f &center )
 }
 
 
-void Particle::update( )
+void Boid::update( )
 {	
 	mCrowdFactor -= ( mCrowdFactor - ( 1.0f - mNumNeighbors * 0.02f ) ) * 0.1f;
 	mCrowdFactor = constrain( mCrowdFactor, 0.5f, 1.0f );
@@ -94,7 +96,7 @@ void Particle::update( )
     }
 }
 
-void Particle::limitSpeed()
+void Boid::limitSpeed()
 {
 	float maxSpeed = mMaxSpeed + mCrowdFactor;
 	float maxSpeedSqrd = maxSpeed * maxSpeed;
@@ -109,21 +111,20 @@ void Particle::limitSpeed()
 	mVel *= (1.0 + mFear );
 }
 
-void Particle::draw()
+void Boid::draw()
 {
 	glColor4f( mColor );
-	//gl::drawVector( mPos - mVelNormal * mLength, mPos - mVelNormal * mLength * 0.75f, mLength * 0.7f, mRadius );
-    drawTail();
+   // drawTail();
 	
 }
 
-void Particle::drawTail()
+void Boid::drawTail()
 {
     
         glBegin(GL_LINE_STRIP);
     {
         for(int i = 1; i < tailLength; i++){
-            float alpha = 0.7 - 0.08 * i;
+            float alpha = 0.8 - 0.05 * i;
             gl::color(ColorAf(1., 1., 1., alpha ) );
             gl::vertex(locs[i]);
         }
@@ -131,7 +132,7 @@ void Particle::drawTail()
     glEnd();
 }
 
-void Particle::addNeighborPos( Vec3f pos )
+void Boid::addNeighborPos( Vec3f pos )
 {
 	mNeighborPos += pos;
 	mNumNeighbors ++;

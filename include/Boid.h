@@ -5,10 +5,10 @@
 
 using namespace ci;
 
-class Particle {
+class Boid {
  public:
-	Particle();
-	Particle( ci::Vec3f pos, ci::Vec3f vel, bool followed );
+	Boid();
+	Boid( ci::Vec3f pos, ci::Vec3f vel, bool followed, float radius );
 	void pullToCenter( const ci::Vec3f &center );
 	void update( );
 	void draw();
@@ -34,6 +34,7 @@ class Particle {
 	float		mMinSpeed, mMinSpeedSqrd;
 	float		mFear;
 	float		mCrowdFactor;
+    float       radius;
 
 	bool		mIsDead;
 	bool		mFollowed;

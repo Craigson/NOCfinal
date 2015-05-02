@@ -1,8 +1,11 @@
 #pragma once
 #include "cinder/Vector.h"
 #include "cinder/Color.h"
+#include "Resources.h"
+#include "cinder/gl/Texture.h"
 #include <vector>
 using namespace ci;
+using namespace ci::app;
 
 class Predator {
  public:
@@ -46,6 +49,9 @@ class Predator {
     //variables for tail
     std::vector<Vec3f>       tailPos;
     int                      tailLength;
+    
+    //texture
+    gl::TextureRef  mText;
     
     
 };

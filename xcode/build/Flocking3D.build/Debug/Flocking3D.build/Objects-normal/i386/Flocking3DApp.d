@@ -133,7 +133,9 @@ dependencies: \
   ../../../cinder_0.8.6_mac/include/cinder/params/Params.h \
   ../../../cinder_0.8.6_mac/include/cinder/Camera.h \
   ../../../cinder_0.8.6_mac/include/cinder/Rand.h \
-  /Users/Craig/Documents/CinderProjects/Flocking3D/include/ParticleController.h \
-  ../include/Particle.h ../include/Predator.h \
+  /Users/Craig/Documents/CinderProjects/Flocking3D/include/ParticleSystem.h \
+  ../include/Boid.h ../include/Predator.h ../include/Resources.h \
+  ../../../cinder_0.8.6_mac/include/cinder/CinderResources.h \
+  ../../../cinder_0.8.6_mac/include/cinder/gl/Texture.h \
   ../../../cinder_0.8.6_mac/include/cinder/Perlin.h \
-  /Users/Craig/Documents/CinderProjects/Flocking3D/xcode/PredCam.h
+  ../../../cinder_0.8.6_mac/include/cinder/gl/GlslProg.h

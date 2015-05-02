@@ -1,7 +1,7 @@
 //Final Project for Nature of Code at ITP, NYU
 //April 2015
 //Created by Craig Pickard
-//Based on Robert Hodgin's 'Welcome to Cinder' Tutorial
+//Built on top of Robert Hodgin's 'Welcome to Cinder' Tutorial
 //Special thanks to Mimi Yin and Dan Shiffman
 
 #include "cinder/app/AppBasic.h"
@@ -11,14 +11,14 @@
 #include "cinder/params/Params.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"
-#include "ParticleController.h"
+#include "ParticleSystem.h"
 #include "cinder/gl/gl.h"
-#include "PredCam.h"
+#include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Texture.h"
 
 //definte constants
-#define NUM_INITIAL_PARTICLES 1500
-#define NUM_INITIAL_PREDATORS 9
-#define NUM_PARTICLES_TO_SPAWN 15
+#define NUM_BOIDS 1500
+#define NUM_PREDS 10
 
 using namespace ci;
 using namespace ci::app;
@@ -30,7 +30,6 @@ public:
     void setup();
     void update();
     void draw();
-    void followPred();
     
     // declare GUI object
     params::InterfaceGlRef	mParams;
@@ -41,30 +40,23 @@ public:
     Vec3f				mEye, mCenter, mUp;
     float				mCameraDistance;
     
-    ParticleController	mParticleController;
-    PredCam*            predCam;
+    ParticleSystem	mParticleSystem;
     float				mZoneRadius;
     float				mLowerThresh, mHigherThresh;
     float				mAttractStrength, mRepelStrength, mOrientStrength;
     
     bool				mCentralGravity;
     bool				mPredatorCam;
+    
+    gl::Texture mTexture;
+    int mNumBoids;
+    Vec3f *mPositions;
+    float *mRadiuses;
+    gl::GlslProg mShader;
 };
 
-/*
- predator cam:
- >randomly select one of the predators
- >assign camera position to predator position
- >create a vector that points ahead of the predator
- >set the lookat point at this vector
- >update the position of the camera
- */
 
-
-
-
-
-
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> S E T T I N G S <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 void FlockingApp::prepareSettings( Settings *settings )
@@ -73,6 +65,10 @@ void FlockingApp::prepareSettings( Settings *settings )
     settings->setFrameRate( 60.0f );
 }
 
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> S E T U P <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 void FlockingApp::setup()
 {
     Rand::randomize();
@@ -80,7 +76,6 @@ void FlockingApp::setup()
     
     mCenter			= Vec3f( getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f );
     mCentralGravity = true;
-    mPredatorCam    = false;
     mZoneRadius		= 80.0f;
     mLowerThresh	= 0.5f;
     mHigherThresh	= 0.8f;
@@ -112,62 +107,99 @@ void FlockingApp::setup()
     mParams->addParam( "Alignment", &mOrientStrength, "min=0.001 max=0.1 step=0.001 keyIncr=o keyDecr=O" );
     
     //
-    mParticleController.addParticles( NUM_INITIAL_PARTICLES );
-    mParticleController.addPredators( NUM_INITIAL_PREDATORS );
+    mParticleSystem.addBoids( NUM_BOIDS );
+    mParticleSystem.addPredators( NUM_PREDS );
     
-    predCam = new PredCam(10.);
+    mTexture = loadImage( loadAsset( "particle.png" ) );
+    mShader = gl::GlslProg( loadAsset( "shader.vert"), loadAsset( "shader.frag" ) );
+    
+    mPositions = new Vec3f[ NUM_BOIDS ];
+    mRadiuses = new float[ NUM_BOIDS ];
     
 }
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> K E Y D O W N <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 void FlockingApp::keyDown( KeyEvent event )
 {
-    if( event.getChar() == 'p' ){
-        mParticleController.addParticles( NUM_PARTICLES_TO_SPAWN );
-    }
+
 }
 
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> U P D A T E <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 void FlockingApp::update()
 {
     if( mLowerThresh > mHigherThresh ) mHigherThresh = mLowerThresh;
     
-    mParticleController.applyForceToPredators( mZoneRadius, 0.4f, 0.7f );
-    mParticleController.applyForceToParticles( mZoneRadius, mLowerThresh, mHigherThresh, mAttractStrength, mRepelStrength, mOrientStrength );
-    if( mCentralGravity ) mParticleController.pullToCenter( mCenter );
-    mParticleController.update();
-    
-    /*
-    if(something yo click){
-    mEye	= Vec3f( 0.0f, 0.0f, mCameraDistance );
-    } else {
-        mEye = yourPredatorClass->returnLoc();
-    }
-    */
-    
+    mParticleSystem.applyForceToPredators( mZoneRadius, 0.4f, 0.7f );
+    mParticleSystem.applyForceToBoids( mZoneRadius, mLowerThresh, mHigherThresh, mAttractStrength, mRepelStrength, mOrientStrength );
+    if( mCentralGravity ) mParticleSystem.pullToCenter( mCenter );
+    mParticleSystem.update();
 
     gl::rotate( mSceneRotation );
+    mCam.lookAt( mEye, mCenter, mUp );
     
-    if (mPredatorCam){
-        predCam->update(mParticleController.mPredators.front().mVel,mParticleController.mPredators.front().loc);
-    } else {
-        mCam.lookAt( mEye, mCenter, mUp );
-        gl::setMatrices( mCam );
+    gl::setMatrices( mCam );
+    
+    int mNumParticles = mParticleSystem.mBoids.size();
+    
+    mParticleSystem.update();
+    for( int i=0; i<mNumParticles; i++ ){
+        mPositions[i] = mParticleSystem.mBoids[i].mPos;
+        mRadiuses[i] = mParticleSystem.mBoids[i].mRadius;
     }
+    
+    
 }
+
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> D R A W <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
 void FlockingApp::draw()
 {
     gl::clear( Color( 0, 0, 0 ), true );
-    gl::enableDepthRead();
-    gl::enableDepthWrite();
+  //  gl::enableDepthRead();
+  //  gl::enableDepthWrite();
     
     gl::enableAlphaBlending();
     
-    gl::color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
-    mParticleController.draw();
+   // gl::color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    
+    mParticleSystem.draw();
+    
     
     // draw gui
     mParams->draw();
+    
+    //draw central planet
+    gl::color(Color(1.,1.,1.));
+    gl::drawSphere(Vec3f(0.,0.,0.),30);
+    
+    //draw point sprite shader
+    mShader.bind();
+    
+    GLint particleRadiusLocation = mShader.getAttribLocation( "particleRadius" );
+    glEnableVertexAttribArray(particleRadiusLocation);
+    glVertexAttribPointer(particleRadiusLocation, 1, GL_FLOAT, false, 0, mRadiuses);
+    
+    glEnable(GL_POINT_SPRITE);
+    glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    
+    glVertexPointer(2, GL_FLOAT, 0, mPositions);
+    
+    mTexture.enableAndBind();
+    glDrawArrays( GL_POINTS, 0, NUM_BOIDS );
+    mTexture.unbind();
+    
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableVertexAttribArrayARB(particleRadiusLocation);
+    mShader.unbind();
+    
 }
 
 CINDER_APP_BASIC( FlockingApp, RendererGl )
