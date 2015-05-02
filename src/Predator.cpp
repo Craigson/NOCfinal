@@ -41,7 +41,7 @@ Predator::Predator( Vec3f pos, Vec3f vel )
 	mIsHungry		= true;
     
     
-    tailLength       = 50;
+    tailLength       = 200;
     
     for(int i = 0; i < tailLength; i++){
         tailPos.push_back(Vec3f::zero());
@@ -113,20 +113,20 @@ void Predator::limitSpeed()
 void Predator::draw()
 {
 	glColor4f( mColor );
+    gl::drawSphere(loc,3,8);
     
-   // gl::enableAlphaBlending();
     drawTail();
+
 }
 
 void Predator::drawTail()
 {
     
     glBegin(GL_LINE_STRIP);
-//    glPointSize( 1.0 );
-//    glBegin(GL_POINTS);
+    glPointSize( 5.0 );
     {
         for(int i = 1; i < tailLength; i++){
-            float alpha = 1. - 0.03 * i;
+            float alpha = 1. - 0.005 * i;
             gl::color(ColorAf(1., 0., 0., alpha ) );
             gl::vertex(tailPos[i]);
         }

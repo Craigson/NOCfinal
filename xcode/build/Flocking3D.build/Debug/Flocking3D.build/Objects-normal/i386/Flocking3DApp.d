@@ -138,4 +138,5 @@ dependencies: \
   ../../../cinder_0.8.6_mac/include/cinder/CinderResources.h \
   ../../../cinder_0.8.6_mac/include/cinder/gl/Texture.h \
   ../../../cinder_0.8.6_mac/include/cinder/Perlin.h \
-  ../../../cinder_0.8.6_mac/include/cinder/gl/GlslProg.h
+  ../../../cinder_0.8.6_mac/include/cinder/gl/GlslProg.h \
+  ../../../cinder_0.8.6_mac/include/cinder/MayaCamUI.h

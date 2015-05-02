@@ -15,9 +15,10 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/MayaCamUI.h"
 
 //definte constants
-#define NUM_BOIDS 1500
+#define NUM_BOIDS 1000
 #define NUM_PREDS 10
 
 using namespace ci;
@@ -27,6 +28,8 @@ class FlockingApp : public AppBasic {
 public:
     void prepareSettings( Settings *settings );
     void keyDown( KeyEvent event );
+    void mouseDown (MouseEvent event);
+    void mouseDrag (MouseEvent event);
     void setup();
     void update();
     void draw();
@@ -36,11 +39,12 @@ public:
     
     // declare camera variables (these will also be used for the predator-cam view)
     CameraPersp			mCam;
+    MayaCamUI           mMayaCam;
     Quatf				mSceneRotation;
     Vec3f				mEye, mCenter, mUp;
     float				mCameraDistance;
     
-    ParticleSystem	mParticleSystem;
+    ParticleSystem	    mParticleSystem;
     float				mZoneRadius;
     float				mLowerThresh, mHigherThresh;
     float				mAttractStrength, mRepelStrength, mOrientStrength;
@@ -61,8 +65,8 @@ public:
 
 void FlockingApp::prepareSettings( Settings *settings )
 {
-    settings->setWindowSize( 875, 600 );
-    settings->setFrameRate( 60.0f );
+    settings->setWindowSize( 1280, 720 );
+    settings->setFrameRate( 30.0f );
 }
 
 
@@ -88,9 +92,12 @@ void FlockingApp::setup()
     mEye			= Vec3f( 0.0f, 0.0f, mCameraDistance );
     mCenter			= Vec3f::zero();
     mUp				= Vec3f::yAxis();
-    mCam.setPerspective( 75.0f, getWindowAspectRatio(), 5.0f, 5000.0f );
     
-    // create GUI elements
+    //MayaCam
+    mCam.setPerspective( 75.0f, getWindowAspectRatio(), 0.1f, 5000.0f );
+    mMayaCam.setCurrentCam(mCam);
+    
+    // create GUI control elements
     mParams = params::InterfaceGl::create( "Flocking", Vec2i( 200, 310 ) );
     mParams->addParam( "Scene Rotation", &mSceneRotation, "opened=1" );
     mParams->addSeparator();
@@ -110,9 +117,9 @@ void FlockingApp::setup()
     mParticleSystem.addBoids( NUM_BOIDS );
     mParticleSystem.addPredators( NUM_PREDS );
     
+    //initialise variables used by the shader
     mTexture = loadImage( loadAsset( "particle.png" ) );
     mShader = gl::GlslProg( loadAsset( "shader.vert"), loadAsset( "shader.frag" ) );
-    
     mPositions = new Vec3f[ NUM_BOIDS ];
     mRadiuses = new float[ NUM_BOIDS ];
     
@@ -123,6 +130,17 @@ void FlockingApp::setup()
 void FlockingApp::keyDown( KeyEvent event )
 {
 
+}
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> M O U S E D O W N <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+void FlockingApp::mouseDown(MouseEvent event){
+    mMayaCam.mouseDown(event.getPos());
+}
+
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> M O U S E D R A G <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+void FlockingApp::mouseDrag(MouseEvent event){
+    mMayaCam.mouseDrag(event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown());
 }
 
 
@@ -159,23 +177,27 @@ void FlockingApp::update()
 
 void FlockingApp::draw()
 {
+    //apply camera matrices before drawing
+    gl::setMatrices(mMayaCam.getCamera());
+    
     gl::clear( Color( 0, 0, 0 ), true );
-   //gl::enableDepthRead();
-    //gl::enableDepthWrite();
     
     gl::enableAlphaBlending();
-    
-   // gl::color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
-    
-    mParticleSystem.draw();
-    
-    
-    // draw gui
-    mParams->draw();
+    gl::enableAdditiveBlending();
     
     //draw central planet
     gl::color(Color(1.,1.,1.));
-    gl::drawSphere(Vec3f(0.,0.,0.),30);
+    gl::drawSphere(Vec3f(0.,0.,0.),15, 30);
+    
+    
+    gl::color( ColorA( 1.0f, 1.0f, 1.0f, 0.1f ) );
+    
+    mParticleSystem.draw();
+    
+    // draw gui
+  //  mParams->draw();
+    
+
     
     //draw point sprite shader
     mShader.bind();
