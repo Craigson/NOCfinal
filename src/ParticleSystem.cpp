@@ -204,7 +204,7 @@ void ParticleSystem::addBoids( int amt )
 	{
 		Vec3f pos = Rand::randVec3f() * Rand::randFloat( 100.0f, 200.0f );
 		Vec3f vel = Rand::randVec3f();
-        float radius = Rand::randFloat(1.0f,20.0f);
+        float radius = Rand::randFloat(0.5f,3.0f);
 		
 		bool followed = false;
 		if( mBoids.size() == 0 ) followed = true;

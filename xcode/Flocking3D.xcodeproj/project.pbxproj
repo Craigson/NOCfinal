@@ -13,6 +13,8 @@
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		2DE58145A13C480787F74979 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 0F3DC590284E4DF89EDEA9B1 /* CinderApp.icns */; };
+		440D76DA1AF52E8300AD2B1A /* shader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 440D76D81AF52E8300AD2B1A /* shader.frag */; };
+		440D76DB1AF52E8300AD2B1A /* shader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 440D76D91AF52E8300AD2B1A /* shader.vert */; };
 		446C95941AF2E41D00D28776 /* Boid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446C95911AF2E41D00D28776 /* Boid.cpp */; };
 		446C95951AF2E41D00D28776 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446C95921AF2E41D00D28776 /* ParticleSystem.cpp */; };
 		446C95961AF2E41D00D28776 /* Predator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446C95931AF2E41D00D28776 /* Predator.cpp */; };
@@ -33,6 +35,8 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		440D76D81AF52E8300AD2B1A /* shader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = shader.frag; path = ../assets/shader.frag; sourceTree = "<group>"; };
+		440D76D91AF52E8300AD2B1A /* shader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = shader.vert; path = ../assets/shader.vert; sourceTree = "<group>"; };
 		446C95911AF2E41D00D28776 /* Boid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Boid.cpp; path = ../src/Boid.cpp; sourceTree = "<group>"; };
 		446C95921AF2E41D00D28776 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleSystem.cpp; path = ../src/ParticleSystem.cpp; sourceTree = "<group>"; };
 		446C95931AF2E41D00D28776 /* Predator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Predator.cpp; path = ../src/Predator.cpp; sourceTree = "<group>"; };
@@ -146,6 +150,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				440D76D81AF52E8300AD2B1A /* shader.frag */,
+				440D76D91AF52E8300AD2B1A /* shader.vert */,
 				446C959D1AF401A900D28776 /* pred.png */,
 				0F3DC590284E4DF89EDEA9B1 /* CinderApp.icns */,
 				CE9A7D4474A5400196DF8B8D /* Info.plist */,
@@ -214,6 +220,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				440D76DA1AF52E8300AD2B1A /* shader.frag in Resources */,
+				440D76DB1AF52E8300AD2B1A /* shader.vert in Resources */,
 				446C959E1AF401A900D28776 /* pred.png in Resources */,
 				2DE58145A13C480787F74979 /* CinderApp.icns in Resources */,
 			);

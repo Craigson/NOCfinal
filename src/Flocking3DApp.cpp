@@ -160,8 +160,8 @@ void FlockingApp::update()
 void FlockingApp::draw()
 {
     gl::clear( Color( 0, 0, 0 ), true );
-  //  gl::enableDepthRead();
-  //  gl::enableDepthWrite();
+   //gl::enableDepthRead();
+    //gl::enableDepthWrite();
     
     gl::enableAlphaBlending();
     
@@ -190,7 +190,7 @@ void FlockingApp::draw()
     
     glEnableClientState(GL_VERTEX_ARRAY);
     
-    glVertexPointer(2, GL_FLOAT, 0, mPositions);
+    glVertexPointer(3, GL_FLOAT, 0, mPositions);
     
     mTexture.enableAndBind();
     glDrawArrays( GL_POINTS, 0, NUM_BOIDS );
