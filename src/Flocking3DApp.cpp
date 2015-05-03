@@ -41,9 +41,9 @@ public:
     params::InterfaceGlRef	mParams;
     
     // declare camera variables (these will also be used for the predator-cam view)
-    CameraPersp			mCam;
+    CameraPersp         mSceneCam;
     MayaCamUI           mMayaCam;
-    Quatf				mSceneRotation;
+   // Quatf				mSceneRotation;
     Vec3f				mEye, mCenter, mUp;
     float				mCameraDistance;
     
@@ -101,9 +101,14 @@ void FlockingApp::setup()
     mCenter			= Vec3f::zero();
     mUp				= Vec3f::yAxis();
     
-    //MayaCam
-    mCam.setPerspective( 75.0f, getWindowAspectRatio(), 0.1f, 5000.0f );
-    mMayaCam.setCurrentCam(mCam);
+    /* setting for Cemera Matrix */
+    mSceneCam.setPerspective(45.0f, getWindowAspectRatio(), 0.1, 10000);
+    Vec3f mEye        = Vec3f( 0, 0, 3000 );
+    Vec3f mCenter     = Vec3f(Vec3f(0, 0, 0));
+    Vec3f mUp         = Vec3f::yAxis();
+    mSceneCam.lookAt( mEye, mCenter, mUp );
+    mSceneCam.setCenterOfInterestPoint(Vec3f(0, 0, 0));
+    mMayaCam.setCurrentCam(mSceneCam);
     
     // create GUI control elements
     mParams = params::InterfaceGl::create( "Flocking", Vec2i( 200, 310 ) );
@@ -163,17 +168,6 @@ void FlockingApp::update()
     gl::pushMatrices();
     {
     
-  gl::rotate( mSceneRotation );
-//    mCam.lookAt( mEye, mCenter, mUp );
-//    
-//    gl::setMatrices( mCam );
-        
-        mTransform.rotate( Vec3f::xAxis(), sinf( (float) getElapsedSeconds() * 3.0f ) * 0.08f );
-        mTransform.rotate( Vec3f::yAxis(), (float) getElapsedSeconds() * 0.1f );
-        mTransform.rotate( Vec3f::zAxis(), sinf( (float) getElapsedSeconds() * 4.3f ) * 0.09f );
-        
-        mSceneRotation.set(mTransform);
-    
     int mNumParticles = mParticleSystem.mBoids.size();
     
     mParticleSystem.update();
@@ -209,6 +203,14 @@ void FlockingApp::draw()
 {
     //apply camera matrices before drawing
     gl::setMatrices(mMayaCam.getCamera());
+    
+    /* draw my objects and make camera animation */
+    gl::pushMatrices();
+    {
+        gl::translate(0, 0, 0);
+        gl::pushMatrices();
+        {
+               gl::rotate(Vec3f(0, rotateY, 0));
     
     gl::clear( Color( 0, 0, 0 ), true );
     
@@ -258,7 +260,11 @@ void FlockingApp::draw()
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableVertexAttribArrayARB(particleRadiusLocation);
     mShader.unbind();
-    
+        }
+    }
+    gl::popMatrices();
+rotateY -= 0.6;
+
 }
 
 void FlockingApp::addMore(int amt){
