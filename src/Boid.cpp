@@ -20,7 +20,7 @@ Boid::Boid( Vec3f pos, Vec3f vel, bool followed, float radius )
 	
 	mNeighborPos	= Vec3f::zero();
 	mNumNeighbors	= 0;
-	mMaxSpeed		= Rand::randFloat( 2.5f, 4.0f );
+	mMaxSpeed		= Rand::randFloat( 2.5f, 7.0f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;
 	mMinSpeed		= Rand::randFloat( 1.0f, 1.5f );
 	mMinSpeedSqrd	= mMinSpeed * mMinSpeed;
@@ -28,7 +28,7 @@ Boid::Boid( Vec3f pos, Vec3f vel, bool followed, float radius )
 	mColor			= ColorA( 1.0f, 1.0f, 1.0f, 1.0f );
 		
 	mDecay			= 0.99f;
-	mRadius			= 1.0f;
+	//mRadius			= 1.0f;
 	mLength			= 5.0f;
 	mFear			= 1.0f;
 	mCrowdFactor	= 1.0f;
@@ -49,7 +49,7 @@ void Boid::pullToCenter( const Vec3f &center )
 {
 	Vec3f dirToCenter = mPos - center;
 	float distToCenter = dirToCenter.length();
-	float distThresh = 200.0f;
+	float distThresh = 600.0f;
 	
 	if( distToCenter > distThresh ){
 		dirToCenter.normalize();

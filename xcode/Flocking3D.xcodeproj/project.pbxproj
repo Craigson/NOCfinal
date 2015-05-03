@@ -83,8 +83,8 @@
 			isa = PBXGroup;
 			children = (
 				71C31BB68A684F31B1A34B4A /* Flocking3DApp.cpp */,
-				446C95911AF2E41D00D28776 /* Boid.cpp */,
 				446C95921AF2E41D00D28776 /* ParticleSystem.cpp */,
+				446C95911AF2E41D00D28776 /* Boid.cpp */,
 				446C95931AF2E41D00D28776 /* Predator.cpp */,
 			);
 			name = Source;

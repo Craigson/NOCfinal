@@ -30,6 +30,8 @@ class Predator {
 	ci::Vec3f	mVel;
 	ci::Vec3f	mVelNormal;
 	ci::Vec3f	mAcc;
+    
+    ci::Vec3f   target;
 	
 	ci::Color	mColor;
 	

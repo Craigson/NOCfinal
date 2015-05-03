@@ -172,14 +172,14 @@ void ParticleSystem::update()
 
 void ParticleSystem::draw()
 {	
-	// DRAW PREDATOR ARROWS
+	//  draw preds
 	for( std::vector<Predator>::iterator p = mPredators.begin(); p != mPredators.end(); ++p ){
 		float hungerColor = 1.0f - p->mHunger;
 		gl::color( ColorA( 1.0f, hungerColor, hungerColor, 1.0f ) );
 		p->draw();
 	}
 	
-	// DRAW PARTICLE ARROWS
+	// draw boids
 	gl::color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
 	//glBegin( GL_LINES );
 	for( std::vector<Boid>::iterator p = mBoids.begin(); p != mBoids.end(); ++p ){
@@ -204,7 +204,7 @@ void ParticleSystem::addBoids( int amt )
 	{
 		Vec3f pos = Rand::randVec3f() * Rand::randFloat( 100.0f, 200.0f );
 		Vec3f vel = Rand::randVec3f();
-        float radius = Rand::randFloat(0.5f,3.0f);
+        float radius = Rand::randFloat(0.5f,5.0f);
 		
 		bool followed = false;
 		if( mBoids.size() == 0 ) followed = true;

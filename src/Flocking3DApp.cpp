@@ -17,9 +17,11 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/MayaCamUI.h"
 
+#include <sstream>
+
 //definte constants
 #define NUM_BOIDS 1000
-#define NUM_PREDS 10
+#define NUM_PREDS 5
 
 using namespace ci;
 using namespace ci::app;
@@ -27,9 +29,10 @@ using namespace ci::app;
 class FlockingApp : public AppBasic {
 public:
     void prepareSettings( Settings *settings );
-    void keyDown( KeyEvent event );
+    void keyUp( KeyEvent event );
     void mouseDown (MouseEvent event);
     void mouseDrag (MouseEvent event);
+    void addMore (int amt);
     void setup();
     void update();
     void draw();
@@ -48,15 +51,20 @@ public:
     float				mZoneRadius;
     float				mLowerThresh, mHigherThresh;
     float				mAttractStrength, mRepelStrength, mOrientStrength;
+    float               rotateY;
     
     bool				mCentralGravity;
     bool				mPredatorCam;
+    bool                addEm;
     
-    gl::Texture mTexture;
-    int mNumBoids;
-    Vec3f *mPositions;
-    float *mRadiuses;
-    gl::GlslProg mShader;
+    gl::Texture         mTexture;
+    int                 mNumBoids;
+    Vec3f               *mPositions;
+    float               *mRadiuses;
+    gl::GlslProg        mShader;
+    
+    int                 mCurrentFrame;
+    Matrix44f           mTransform;
 };
 
 
@@ -81,8 +89,8 @@ void FlockingApp::setup()
     mCenter			= Vec3f( getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f );
     mCentralGravity = true;
     mZoneRadius		= 80.0f;
-    mLowerThresh	= 0.5f;
-    mHigherThresh	= 0.8f;
+    mLowerThresh	= 0.3f;
+    mHigherThresh	= 0.9f;
     mAttractStrength	= 0.004f;
     mRepelStrength		= 0.01f;
     mOrientStrength		= 0.01f;
@@ -99,19 +107,15 @@ void FlockingApp::setup()
     
     // create GUI control elements
     mParams = params::InterfaceGl::create( "Flocking", Vec2i( 200, 310 ) );
-    mParams->addParam( "Scene Rotation", &mSceneRotation, "opened=1" );
+    mParams->addParam( "Center Gravity", &mCentralGravity);
     mParams->addSeparator();
-    mParams->addParam( "Camera Distance", &mCameraDistance, "min=100.0 max=2000.0 step=50.0 keyIncr=s keyDecr=w" );
-    mParams->addParam( "Center Gravity", &mCentralGravity, "keyIncr=g" );
-    mParams->addParam( "Predator-Cam", &mPredatorCam);
+    mParams->addParam( "Zone Radius", &mZoneRadius, "min=10.0 max=100.0 step=1.0" );
+    mParams->addParam( "Lower Thresh", &mLowerThresh, "min=0.025 max=1.0 step=0.025");
+    mParams->addParam( "Higher Thresh", &mHigherThresh, "min=0.025 max=1.0 step=0.025");
     mParams->addSeparator();
-    mParams->addParam( "Zone Radius", &mZoneRadius, "min=10.0 max=100.0 step=1.0 keyIncr=z keyDecr=Z" );
-    mParams->addParam( "Lower Thresh", &mLowerThresh, "min=0.025 max=1.0 step=0.025 keyIncr=l keyDecr=L" );
-    mParams->addParam( "Higher Thresh", &mHigherThresh, "min=0.025 max=1.0 step=0.025 keyIncr=h keyDecr=H" );
-    mParams->addSeparator();
-    mParams->addParam( "Atrraction", &mAttractStrength, "min=0.001 max=0.1 step=0.001 keyIncr=a keyDecr=A" );
-    mParams->addParam( "Repulsion", &mRepelStrength, "min=0.001 max=0.1 step=0.001 keyIncr=r keyDecr=R" );
-    mParams->addParam( "Alignment", &mOrientStrength, "min=0.001 max=0.1 step=0.001 keyIncr=o keyDecr=O" );
+    mParams->addParam( "Atrraction", &mAttractStrength, "min=0.001 max=0.1 step=0.001 " );
+    mParams->addParam( "Repulsion", &mRepelStrength, "min=0.001 max=0.1 step=0.001" );
+    mParams->addParam( "Alignment", &mOrientStrength, "min=0.001 max=0.1 step=0.001" );
     
     //
     mParticleSystem.addBoids( NUM_BOIDS );
@@ -123,13 +127,14 @@ void FlockingApp::setup()
     mPositions = new Vec3f[ NUM_BOIDS ];
     mRadiuses = new float[ NUM_BOIDS ];
     
+    mCurrentFrame = 0;
+    
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> K E Y D O W N <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-void FlockingApp::keyDown( KeyEvent event )
+void FlockingApp::keyUp( KeyEvent event )
 {
-
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> M O U S E D O W N <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -154,11 +159,20 @@ void FlockingApp::update()
     mParticleSystem.applyForceToBoids( mZoneRadius, mLowerThresh, mHigherThresh, mAttractStrength, mRepelStrength, mOrientStrength );
     if( mCentralGravity ) mParticleSystem.pullToCenter( mCenter );
     mParticleSystem.update();
-
-    gl::rotate( mSceneRotation );
-    mCam.lookAt( mEye, mCenter, mUp );
     
-    gl::setMatrices( mCam );
+    gl::pushMatrices();
+    {
+    
+  gl::rotate( mSceneRotation );
+//    mCam.lookAt( mEye, mCenter, mUp );
+//    
+//    gl::setMatrices( mCam );
+        
+        mTransform.rotate( Vec3f::xAxis(), sinf( (float) getElapsedSeconds() * 3.0f ) * 0.08f );
+        mTransform.rotate( Vec3f::yAxis(), (float) getElapsedSeconds() * 0.1f );
+        mTransform.rotate( Vec3f::zAxis(), sinf( (float) getElapsedSeconds() * 4.3f ) * 0.09f );
+        
+        mSceneRotation.set(mTransform);
     
     int mNumParticles = mParticleSystem.mBoids.size();
     
@@ -169,6 +183,22 @@ void FlockingApp::update()
     }
     
     
+    
+    
+    /*
+     if (mCurrentFrame > 300){
+    writeImage( getDocumentsDirectory() / "flocking_images2" / "saveImage_" / ( toString( mCurrentFrame ) + ".png" ), copyWindowSurface() );
+    mCurrentFrame++;
+     }
+    
+    if (mCurrentFrame > 1200){
+        exit(0);
+    }
+     */
+    }
+ 
+    
+
 }
 
 
@@ -186,8 +216,15 @@ void FlockingApp::draw()
     gl::enableAdditiveBlending();
     
     //draw central planet
-    gl::color(Color(1.,1.,1.));
-    gl::drawSphere(Vec3f(0.,0.,0.),15, 30);
+    gl::drawSphere(Vec3f(0.,0.,0.),8, 50);
+    
+    //draw axes
+    gl::color(ColorA(0.,0.,1.,0.4));
+    gl::drawLine(Vec3f(-1500.,0.,0.),Vec3f(1500.,0.,0.));
+    gl::color(ColorA(1.,0.,0.,0.4));
+    gl::drawLine(Vec3f(0.,-1500.,0.),Vec3f(0.,1500.,0.));
+    gl::color(ColorA(0.,1.,0.,0.4));
+    gl::drawLine(Vec3f(0.,0.,-1500.),Vec3f(0.,0.,1500.));
     
     
     gl::color( ColorA( 1.0f, 1.0f, 1.0f, 0.1f ) );
@@ -195,9 +232,9 @@ void FlockingApp::draw()
     mParticleSystem.draw();
     
     // draw gui
-  //  mParams->draw();
+    //  mParams->draw();
     
-
+    
     
     //draw point sprite shader
     mShader.bind();
@@ -224,4 +261,6 @@ void FlockingApp::draw()
     
 }
 
+void FlockingApp::addMore(int amt){
+}
 CINDER_APP_BASIC( FlockingApp, RendererGl )
